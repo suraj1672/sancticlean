@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Smart Dustbin Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="styles.css" />
+  <!-- Firebase v9 compat (global) -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Smart Dustbin</h1>
+      <p class="sub">Live fill-level with Firestore</p>
+    </header>
+
+    <main>
+      <section class="card">
+        <div class="card-head">
+          <div class="status-pill" id="statusPill">—</div>
+
+          <!-- device selector -->
+          <div class="device">
+            <label for="deviceSelect" style="margin-right:8px; color:#a9b4d6;">Device:</label>
+            <select id="deviceSelect" class="device-select"></select>
+          </div>
+        </div>
+
+        <div class="ring">
+          <svg viewBox="0 0 120 120" class="meter">
+            <circle cx="60" cy="60" r="52" class="bg"></circle>
+            <circle cx="60" cy="60" r="52" class="fg" id="meterFg"></circle>
+          </svg>
+          <div class="percent" id="fillPct">0%</div>
+        </div>
+
+        <div class="grid">
+          <div class="kv">
+            <div class="k">Distance</div>
+            <div class="v"><span id="distance">—</span> cm</div>
+          </div>
+          <div class="kv">
+            <div class="k">Bin Depth</div>
+            <div class="v"><span id="depth">—</span> cm</div>
+          </div>
+          <div class="kv">
+            <div class="k">Last Updated</div>
+            <div class="v" id="updatedAt">—</div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <small>Powered by Firebase & ESP8266</small>
+    </footer>
+  </div>
+
+  <script src="app-compat-multi.js"></script>
+</body>
+</html>

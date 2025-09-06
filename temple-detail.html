@@ -1,0 +1,380 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Temple Details - SanctiClean</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="temple-styles.css" />
+  <!-- Firebase v9 compat (global) -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+</head>
+<body>
+  <div class="wrap">
+    <!-- Navigation Header -->
+    <nav class="nav-header">
+      <button class="back-btn" onclick="goBack()">
+        <i class="fas fa-arrow-left"></i> Back to Dashboard
+      </button>
+      <div class="nav-title">
+        <h1 id="temple-name">Temple Details</h1>
+        <p class="nav-subtitle" id="temple-location">Loading...</p>
+      </div>
+    </nav>
+
+    <!-- Temple Status Overview -->
+    <section class="temple-overview">
+      <div class="overview-grid">
+        <div class="overview-card current-status" id="current-status-card">
+          <div class="status-header">
+            <h3><i class="fas fa-thermometer-half"></i> Current Status</h3>
+            <div class="status-pill large" id="current-status">—</div>
+          </div>
+          <div class="status-content">
+            <div class="ring-large">
+              <svg viewBox="0 0 120 120" class="meter">
+                <circle cx="60" cy="60" r="52" class="bg"></circle>
+                <circle cx="60" cy="60" r="52" class="fg" id="current-meter"></circle>
+              </svg>
+              <div class="percent-large" id="current-fill">0%</div>
+            </div>
+            <div class="current-stats">
+              <div class="current-stat">
+                <span class="label">Distance:</span>
+                <span class="value" id="current-distance">—</span>
+              </div>
+              <div class="current-stat">
+                <span class="label">Bin Depth:</span>
+                <span class="value" id="current-depth">—</span>
+              </div>
+              <div class="current-stat">
+                <span class="label">Last Updated:</span>
+                <span class="value" id="current-updated">—</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="overview-card">
+          <h3><i class="fas fa-calendar-day"></i> Today's Summary</h3>
+          <div class="today-stats">
+            <div class="stat-box">
+              <div class="stat-number" id="today-full-count">0</div>
+              <div class="stat-label">Times Full</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-number" id="today-email-count">0</div>
+              <div class="stat-label">Email Alerts</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-number" id="today-avg-fill">0%</div>
+              <div class="stat-label">Avg Fill Level</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="overview-card">
+          <h3><i class="fas fa-chart-line"></i> Weekly Summary</h3>
+          <div class="weekly-stats">
+            <div class="stat-box">
+              <div class="stat-number" id="week-total-full">0</div>
+              <div class="stat-label">Total Full Events</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-number" id="week-total-emails">0</div>
+              <div class="stat-label">Total Email Alerts</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-number" id="week-avg-daily">0</div>
+              <div class="stat-label">Avg Daily Full</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- Email Alert History -->
+    <section class="alerts-section">
+      <div class="section-header">
+        <h2><i class="fas fa-envelope"></i> Email Alert History</h2>
+        <div class="date-filter">
+          <select id="date-filter">
+            <option value="today">Today</option>
+            <option value="week" selected>This Week</option>
+            <option value="month">This Month</option>
+            <option value="all">All Time</option>
+          </select>
+        </div>
+      </div>
+      
+      <div class="alerts-container">
+        <div class="alerts-header">
+          <div class="alert-col">Time</div>
+          <div class="alert-col">Fill Level</div>
+          <div class="alert-col">Status</div>
+          <div class="alert-col">Email Sent</div>
+          <div class="alert-col">Response Time</div>
+        </div>
+        <div class="alerts-body" id="alerts-list">
+          <div class="loading-alerts">
+            <i class="fas fa-spinner fa-spin"></i> Loading alert history...
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- Device Controls -->
+    <section class="device-controls-section">
+      <h2><i class="fas fa-cog"></i> Device Controls</h2>
+      <div class="controls-grid">
+        <div class="control-card">
+          <h3><i class="fas fa-ruler-vertical"></i> Bin Calibration</h3>
+          <p>Calibrate individual bin measurements. Each bin has different dimensions and requires separate calibration.</p>
+          <div class="calibration-controls">
+            <div class="bin-info">
+              <div class="bin-details">
+                <span class="label">Bin Type:</span>
+                <span class="value" id="bin-type">Standard Temple Bin</span>
+              </div>
+              <div class="bin-details">
+                <span class="label">Bin Capacity:</span>
+                <span class="value" id="bin-capacity">50L</span>
+              </div>
+            </div>
+            
+            <div class="calibration-steps">
+              <h4>Calibration Steps:</h4>
+              <div class="step">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                  <strong>Empty Bin Calibration</strong>
+                  <p>Ensure bin is completely empty, then calibrate 0% level</p>
+                  <div class="current-reading">
+                    <span class="label">Current Distance:</span>
+                    <span class="value" id="current-raw-distance">— cm</span>
+                  </div>
+                  <button class="calibrate-btn" id="calibrate-empty-btn" onclick="startEmptyCalibration()">
+                    <i class="fas fa-crosshairs"></i> Calibrate Empty (0%)
+                  </button>
+                </div>
+              </div>
+              
+              <div class="step">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                  <strong>Full Bin Calibration</strong>
+                  <p>Fill bin to maximum capacity, then calibrate 100% level</p>
+                  <div class="current-reading">
+                    <span class="label">Current Distance:</span>
+                    <span class="value" id="current-full-distance">— cm</span>
+                  </div>
+                  <button class="calibrate-btn" id="calibrate-full-btn" onclick="startFullCalibration()">
+                    <i class="fas fa-crosshairs"></i> Calibrate Full (100%)
+                  </button>
+                </div>
+              </div>
+            </div>
+            
+            <div class="calibration-status">
+              <div class="status-item">
+                <span class="label">Empty Level (0%):</span>
+                <span class="value" id="empty-level-distance">— cm</span>
+              </div>
+              <div class="status-item">
+                <span class="label">Full Level (100%):</span>
+                <span class="value" id="full-level-distance">— cm</span>
+              </div>
+              <div class="status-item">
+                <span class="label">Calibration Status:</span>
+                <span class="value" id="calibration-status">Not Calibrated</span>
+              </div>
+            </div>
+            
+            <div class="calibration-progress" id="calibration-progress" style="display: none;">
+              <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill"></div>
+              </div>
+              <span class="progress-text" id="progress-text">Measuring...</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="control-card">
+          <h3><i class="fas fa-wifi"></i> WiFi Configuration</h3>
+          <p>Update WiFi credentials for this device remotely.</p>
+          <div class="wifi-controls">
+            <div class="wifi-status">
+              <span class="label">Current Network:</span>
+              <span class="value" id="current-wifi-ssid">Loading...</span>
+            </div>
+            <div class="wifi-form">
+              <div class="form-group">
+                <label for="new-wifi-ssid">New WiFi SSID:</label>
+                <input type="text" id="new-wifi-ssid" placeholder="Enter WiFi network name">
+              </div>
+              <div class="form-group">
+                <label for="new-wifi-password">WiFi Password:</label>
+                <input type="password" id="new-wifi-password" placeholder="Enter WiFi password">
+              </div>
+              <button class="wifi-update-btn" id="wifi-update-btn" onclick="updateWiFiConfig()">
+                <i class="fas fa-sync-alt"></i> Update WiFi Settings
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="control-card">
+          <h3><i class="fas fa-envelope"></i> SMTP Configuration</h3>
+          <p>Configure email notification settings for this device.</p>
+          <div class="smtp-controls">
+            <div class="smtp-status">
+              <span class="label">Current SMTP Status:</span>
+              <span class="value" id="current-smtp-status">Loading...</span>
+            </div>
+            <div class="smtp-form">
+              <div class="form-group">
+                <label for="smtp-server">SMTP Server:</label>
+                <input type="text" id="smtp-server" placeholder="smtp.gmail.com">
+              </div>
+              <div class="form-group">
+                <label for="smtp-port">SMTP Port:</label>
+                <input type="number" id="smtp-port" placeholder="587" value="587">
+              </div>
+              <div class="form-group">
+                <label for="smtp-email">Sender Email:</label>
+                <input type="email" id="smtp-email" placeholder="your-email@gmail.com">
+              </div>
+              <div class="form-group">
+                <label for="smtp-password">Email Password:</label>
+                <input type="password" id="smtp-password" placeholder="App password">
+              </div>
+              <div class="form-group">
+                <label for="smtp-recipients">Recipient Emails (comma separated):</label>
+                <textarea id="smtp-recipients" placeholder="admin@temple.com, manager@temple.com" rows="3"></textarea>
+              </div>
+              <button class="smtp-update-btn" id="smtp-update-btn" onclick="updateSMTPConfig()">
+                <i class="fas fa-envelope"></i> Update SMTP Settings
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="control-card">
+          <h3><i class="fas fa-tools"></i> Device Commands</h3>
+          <p>Send commands to the device for maintenance and testing.</p>
+          <div class="device-commands">
+            <button class="command-btn" onclick="sendDeviceCommand('reboot')">
+              <i class="fas fa-power-off"></i> Restart Device
+            </button>
+            <button class="command-btn" onclick="sendDeviceCommand('test_email')">
+              <i class="fas fa-envelope"></i> Test Email Alert
+            </button>
+            <button class="command-btn" onclick="sendDeviceCommand('reset_counters')">
+              <i class="fas fa-undo"></i> Reset Daily Counters
+            </button>
+            <button class="command-btn" onclick="sendDeviceCommand('force_update')">
+              <i class="fas fa-upload"></i> Force Data Update
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Device Information -->
+    <section class="device-info-section">
+      <h2><i class="fas fa-microchip"></i> Device Information</h2>
+      <div class="device-info-grid">
+        <div class="device-card">
+          <h3>Hardware Details</h3>
+          <div class="device-details">
+            <div class="detail-item">
+              <span class="detail-label">Device ID:</span>
+              <span class="detail-value" id="device-id">—</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Bin Depth:</span>
+              <span class="detail-value" id="device-depth">—</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Installation Date:</span>
+              <span class="detail-value" id="device-installed">—</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Last Maintenance:</span>
+              <span class="detail-value" id="device-maintenance">—</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="device-card">
+          <h3>Connection Status</h3>
+          <div class="connection-status">
+            <div class="status-indicator" id="connection-indicator">
+              <i class="fas fa-circle"></i>
+              <span id="connection-status">Checking...</span>
+            </div>
+            <div class="connection-details">
+              <div class="detail-item">
+                <span class="detail-label">Signal Strength:</span>
+                <span class="detail-value" id="signal-strength">—</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Battery Level:</span>
+                <span class="detail-value" id="battery-level">—</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Uptime:</span>
+                <span class="detail-value" id="device-uptime">—</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="device-card">
+          <h3>Alert Configuration</h3>
+          <div class="alert-config">
+            <div class="config-item">
+              <span class="config-label">SMTP Server:</span>
+              <span class="config-value">Enabled</span>
+            </div>
+            <div class="config-item">
+              <span class="config-label">Email Recipients:</span>
+              <span class="config-value" id="email-recipients">3 contacts</span>
+            </div>
+            <div class="config-item">
+              <span class="config-label">Alert Threshold:</span>
+              <span class="config-value">80% Full</span>
+            </div>
+            <div class="config-item">
+              <span class="config-label">Notification Interval:</span>
+              <span class="config-value">30 minutes</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+      <div class="footer-content">
+        <div class="footer-section">
+          <h4>Temple Monitoring System</h4>
+          <p>Detailed analytics and real-time monitoring</p>
+        </div>
+        <div class="footer-section">
+          <h4>Data Refresh</h4>
+          <p><i class="fas fa-sync-alt"></i> Auto-refresh every 30 seconds</p>
+          <p><i class="fas fa-database"></i> Data stored for 90 days</p>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <script src="temple-detail.js"></script>
+</body>
+</html>

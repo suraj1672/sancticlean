@@ -1,0 +1,373 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>SanctiClean - Smart Temple Management</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="temple-styles.css" />
+  <!-- Firebase v9 compat (global) -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1><i class="fas fa-om"></i> SanctiClean</h1>
+      <p class="sub">Real-time monitoring of temple bin systems across Puri, Odisha</p>
+    </header>
+
+    <!-- NGO Partners Section -->
+    <section class="ngo-section">
+      <h2><i class="fas fa-hands-helping"></i> Partner NGOs</h2>
+      <div class="ngo-grid">
+        <div class="ngo-card" data-ngo="greenpuri">
+          <div class="ngo-icon"><i class="fas fa-leaf"></i></div>
+          <h3 id="ngo-name-greenpuri">Green Puri Initiative</h3>
+          <p id="ngo-desc-greenpuri">Environmental conservation and waste management</p>
+          <div class="ngo-contact">
+            <span><i class="fas fa-phone"></i> <span id="ngo-phone-greenpuri">+91 9876543210</span></span>
+            <span><i class="fas fa-envelope"></i> <span id="ngo-email-greenpuri">info@greenpuri.org</span></span>
+          </div>
+          <div class="ngo-actions">
+            <button class="edit-btn" onclick="editNGO('greenpuri')">
+              <i class="fas fa-edit"></i> Edit
+            </button>
+          </div>
+        </div>
+        <div class="ngo-card" data-ngo="swachhodisha">
+          <div class="ngo-icon"><i class="fas fa-recycle"></i></div>
+          <h3 id="ngo-name-swachhodisha">Swachh Odisha Foundation</h3>
+          <p id="ngo-desc-swachhodisha">Clean India mission implementation</p>
+          <div class="ngo-contact">
+            <span><i class="fas fa-phone"></i> <span id="ngo-phone-swachhodisha">+91 9876543211</span></span>
+            <span><i class="fas fa-envelope"></i> <span id="ngo-email-swachhodisha">contact@swachhodisha.org</span></span>
+          </div>
+          <div class="ngo-actions">
+            <button class="edit-btn" onclick="editNGO('swachhodisha')">
+              <i class="fas fa-edit"></i> Edit
+            </button>
+          </div>
+        </div>
+        <div class="ngo-card" data-ngo="templecare">
+          <div class="ngo-icon"><i class="fas fa-heart"></i></div>
+          <h3 id="ngo-name-templecare">Temple Care Society</h3>
+          <p id="ngo-desc-templecare">Temple maintenance and cleanliness</p>
+          <div class="ngo-contact">
+            <span><i class="fas fa-phone"></i> <span id="ngo-phone-templecare">+91 9876543212</span></span>
+            <span><i class="fas fa-envelope"></i> <span id="ngo-email-templecare">help@templecare.org</span></span>
+          </div>
+          <div class="ngo-actions">
+            <button class="edit-btn" onclick="editNGO('templecare')">
+              <i class="fas fa-edit"></i> Edit
+            </button>
+          </div>
+        </div>
+        <div class="ngo-card" data-ngo="cleannetwork">
+          <div class="ngo-icon"><i class="fas fa-users"></i></div>
+          <h3 id="ngo-name-cleannetwork">Community Clean Network</h3>
+          <p id="ngo-desc-cleannetwork">Community-driven cleanliness programs</p>
+          <div class="ngo-contact">
+            <span><i class="fas fa-phone"></i> <span id="ngo-phone-cleannetwork">+91 9876543213</span></span>
+            <span><i class="fas fa-envelope"></i> <span id="ngo-email-cleannetwork">info@cleannetwork.org</span></span>
+          </div>
+          <div class="ngo-actions">
+            <button class="edit-btn" onclick="editNGO('cleannetwork')">
+              <i class="fas fa-edit"></i> Edit
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Temple Dashboard Section -->
+    <section class="temple-section">
+      <h2><i class="fas fa-place-of-worship"></i> Temple Bin Monitoring</h2>
+      <div class="temple-grid">
+        
+        <!-- Jagannath Temple -->
+        <div class="temple-card" data-temple="jagannath">
+          <div class="temple-header">
+            <div class="temple-info">
+              <h3><i class="fas fa-place-of-worship"></i> Jagannath Temple</h3>
+              <p class="temple-location">Main Temple Complex, Puri</p>
+              <div class="device-info">Device ID: <span class="device-id">TEMPLE_01</span></div>
+            </div>
+            <div class="temple-status">
+              <div class="status-pill" id="status-jagannath">—</div>
+              <div class="notification-count" id="notifications-jagannath">0 alerts</div>
+            </div>
+          </div>
+          
+          <div class="temple-content">
+            <div class="ring-container">
+              <div class="ring">
+                <svg viewBox="0 0 120 120" class="meter">
+                  <circle cx="60" cy="60" r="52" class="bg"></circle>
+                  <circle cx="60" cy="60" r="52" class="fg" id="meter-jagannath"></circle>
+                </svg>
+                <div class="percent" id="fill-jagannath">0%</div>
+              </div>
+            </div>
+            
+            <div class="temple-stats">
+              <div class="stat-item">
+                <div class="stat-label">Fill Level</div>
+                <div class="stat-value"><span id="distance-jagannath">—</span> cm</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Bin Depth</div>
+                <div class="stat-value"><span id="depth-jagannath">—</span> cm</div>
+              </div>
+            </div>
+            <div class="temple-actions">
+              <button class="edit-btn" onclick="editTemple('jagannath')">
+                <i class="fas fa-edit"></i> Edit Details
+              </button>
+              <button class="view-btn" onclick="viewTempleDetails('jagannath')">
+                <i class="fas fa-eye"></i> View Details
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Gundicha Temple -->
+        <div class="temple-card" data-temple="gundicha">
+          <div class="temple-header">
+            <div class="temple-info">
+              <h3><i class="fas fa-place-of-worship"></i> Gundicha Temple</h3>
+              <p class="temple-location">Gundicha Ghar, Puri</p>
+              <div class="device-info">Device ID: <span class="device-id">TEMPLE_02</span></div>
+            </div>
+            <div class="temple-status">
+              <div class="status-pill" id="status-gundicha">—</div>
+              <div class="notification-count" id="notifications-gundicha">0 alerts</div>
+            </div>
+          </div>
+          
+          <div class="temple-content">
+            <div class="ring-container">
+              <div class="ring">
+                <svg viewBox="0 0 120 120" class="meter">
+                  <circle cx="60" cy="60" r="52" class="bg"></circle>
+                  <circle cx="60" cy="60" r="52" class="fg" id="meter-gundicha"></circle>
+                </svg>
+                <div class="percent" id="fill-gundicha">0%</div>
+              </div>
+            </div>
+            
+            <div class="temple-stats">
+              <div class="stat-item">
+                <div class="stat-label">Fill Level</div>
+                <div class="stat-value"><span id="distance-gundicha">—</span> cm</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Bin Depth</div>
+                <div class="stat-value"><span id="depth-gundicha">—</span> cm</div>
+              </div>
+            </div>
+            <div class="temple-actions">
+              <button class="edit-btn" onclick="editTemple('gundicha')">
+                <i class="fas fa-edit"></i> Edit Details
+              </button>
+              <button class="view-btn" onclick="viewTempleDetails('gundicha')">
+                <i class="fas fa-eye"></i> View Details
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Lokanath Temple -->
+        <div class="temple-card" data-temple="lokanath">
+          <div class="temple-header">
+            <div class="temple-info">
+              <h3><i class="fas fa-place-of-worship"></i> Lokanath Temple</h3>
+              <p class="temple-location">Lokanath Road, Puri</p>
+              <div class="device-info">Device ID: <span class="device-id">TEMPLE_03</span></div>
+            </div>
+            <div class="temple-status">
+              <div class="status-pill" id="status-lokanath">—</div>
+              <div class="notification-count" id="notifications-lokanath">0 alerts</div>
+            </div>
+          </div>
+          
+          <div class="temple-content">
+            <div class="ring-container">
+              <div class="ring">
+                <svg viewBox="0 0 120 120" class="meter">
+                  <circle cx="60" cy="60" r="52" class="bg"></circle>
+                  <circle cx="60" cy="60" r="52" class="fg" id="meter-lokanath"></circle>
+                </svg>
+                <div class="percent" id="fill-lokanath">0%</div>
+              </div>
+            </div>
+            
+            <div class="temple-stats">
+              <div class="stat-item">
+                <div class="stat-label">Fill Level</div>
+                <div class="stat-value"><span id="distance-lokanath">—</span> cm</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Bin Depth</div>
+                <div class="stat-value"><span id="depth-lokanath">—</span> cm</div>
+              </div>
+            </div>
+            <div class="temple-actions">
+              <button class="edit-btn" onclick="editTemple('lokanath')">
+                <i class="fas fa-edit"></i> Edit Details
+              </button>
+              <button class="view-btn" onclick="viewTempleDetails('lokanath')">
+                <i class="fas fa-eye"></i> View Details
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mausi Maa Temple -->
+        <div class="temple-card" data-temple="mausimaa">
+          <div class="temple-header">
+            <div class="temple-info">
+              <h3><i class="fas fa-place-of-worship"></i> Mausi Maa Temple</h3>
+              <p class="temple-location">Grand Road, Puri</p>
+              <div class="device-info">Device ID: <span class="device-id">TEMPLE_04</span></div>
+            </div>
+            <div class="temple-status">
+              <div class="status-pill" id="status-mausimaa">—</div>
+              <div class="notification-count" id="notifications-mausimaa">0 alerts</div>
+            </div>
+          </div>
+          
+          <div class="temple-content">
+            <div class="ring-container">
+              <div class="ring">
+                <svg viewBox="0 0 120 120" class="meter">
+                  <circle cx="60" cy="60" r="52" class="bg"></circle>
+                  <circle cx="60" cy="60" r="52" class="fg" id="meter-mausimaa"></circle>
+                </svg>
+                <div class="percent" id="fill-mausimaa">0%</div>
+              </div>
+            </div>
+            
+            <div class="temple-stats">
+              <div class="stat-item">
+                <div class="stat-label">Fill Level</div>
+                <div class="stat-value"><span id="distance-mausimaa">—</span> cm</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Bin Depth</div>
+                <div class="stat-value"><span id="depth-mausimaa">—</span> cm</div>
+              </div>
+            </div>
+            <div class="temple-actions">
+              <button class="edit-btn" onclick="editTemple('mausimaa')">
+                <i class="fas fa-edit"></i> Edit Details
+              </button>
+              <button class="view-btn" onclick="viewTempleDetails('mausimaa')">
+                <i class="fas fa-eye"></i> View Details
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Future Implementation Section -->
+    <section class="future-section">
+      <h2><i class="fas fa-rocket"></i> Future Implementation</h2>
+      <div class="future-content">
+        <div class="future-intro">
+          <h3>Next Generation Smart Temple Management</h3>
+          <p>We are working on advanced AI and ML technologies to revolutionize temple waste management and create a cleaner, smarter environment for devotees.</p>
+        </div>
+        
+        <div class="future-features">
+          <div class="future-feature">
+            <div class="feature-image">
+              <i class="fas fa-brain"></i>
+            </div>
+            <div class="feature-content">
+              <h4>AI-Powered Waste Classification</h4>
+              <p>Advanced machine learning algorithms will automatically detect and classify different types of waste (organic, plastic, paper, etc.) to optimize collection routes and recycling processes.</p>
+            </div>
+          </div>
+          
+          <div class="future-feature">
+            <div class="feature-image">
+              <i class="fas fa-robot"></i>
+            </div>
+            <div class="feature-content">
+              <h4>Predictive Analytics</h4>
+              <p>Smart prediction models will forecast waste generation patterns based on temple events, festivals, and historical data to ensure optimal resource allocation.</p>
+            </div>
+          </div>
+          
+          <div class="future-feature">
+            <div class="feature-image">
+              <i class="fas fa-mobile-alt"></i>
+            </div>
+            <div class="feature-content">
+              <h4>Mobile App Integration</h4>
+              <p>Dedicated mobile application for temple authorities and devotees to report issues, track cleanliness status, and receive real-time notifications.</p>
+            </div>
+          </div>
+          
+          <div class="future-feature">
+            <div class="feature-image">
+              <i class="fas fa-chart-line"></i>
+            </div>
+            <div class="feature-content">
+              <h4>Advanced Analytics Dashboard</h4>
+              <p>Comprehensive analytics platform with heat maps, trend analysis, and performance metrics to optimize temple cleanliness operations.</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="future-timeline">
+          <h4>Implementation Timeline</h4>
+          <div class="timeline">
+            <div class="timeline-item">
+              <div class="timeline-date">Q2 2024</div>
+              <div class="timeline-content">AI Waste Classification System</div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-date">Q3 2024</div>
+              <div class="timeline-content">Predictive Analytics Platform</div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-date">Q4 2024</div>
+              <div class="timeline-content">Mobile App Launch</div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-date">Q1 2025</div>
+              <div class="timeline-content">Advanced Analytics Dashboard</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <footer>
+      <div class="footer-content">
+        <div class="footer-section">
+          <h4>Smart Temple Management</h4>
+          <p>Powered by IoT technology for cleaner temples</p>
+        </div>
+        <div class="footer-section">
+          <h4>Contact Support</h4>
+          <p><i class="fas fa-envelope"></i> support@templedashboard.com</p>
+          <p><i class="fas fa-phone"></i> +91 674-XXXX-XXXX</p>
+        </div>
+        <div class="footer-section">
+          <h4>Emergency</h4>
+          <p><i class="fas fa-exclamation-circle"></i> 24/7 Monitoring Active</p>
+          <p><i class="fas fa-bell"></i> SMTP Notifications Enabled</p>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <script src="temple-dashboard.js"></script>
+</body>
+</html>
