@@ -716,53 +716,408 @@ footer {
 .pill-half { background: var(--warning) !important; }
 .pill-full { background: var(--danger) !important; }
 
-/* Responsive Design */
+/* Enhanced Mobile Responsive Design */
+
+/* Tablet and small desktop */
+@media (max-width: 1024px) {
+  .wrap {
+    padding: 24px 16px 60px;
+  }
+  
+  .future-features {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  }
+  
+  .timeline {
+    flex-wrap: wrap;
+    gap: 15px;
+    justify-content: center;
+  }
+  
+  .timeline::before {
+    display: none;
+  }
+  
+  .timeline-item {
+    min-width: 140px;
+    margin: 5px;
+  }
+}
+
+/* Mobile landscape and small tablets */
 @media (max-width: 768px) {
+  .wrap {
+    padding: 20px 14px 50px;
+  }
+  
+  /* Header adjustments */
+  h1 {
+    font-size: clamp(24px, 6vw, 32px);
+  }
+  
+  .sub {
+    font-size: 14px;
+    padding: 0 10px;
+  }
+  
+  /* Temple grid */
   .temple-grid {
     grid-template-columns: 1fr;
+    gap: 20px;
   }
   
   .temple-content {
     flex-direction: column;
     text-align: center;
+    gap: 20px;
   }
   
   .temple-stats {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr 1fr;
     width: 100%;
+    gap: 10px;
   }
   
+  .ring {
+    width: 120px;
+    height: 120px;
+  }
+  
+  /* NGO grid */
   .ngo-grid {
     grid-template-columns: 1fr;
+    gap: 16px;
   }
   
+  .ngo-card {
+    padding: 18px;
+  }
+  
+  /* Future features */
+  .future-features {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  
+  .future-feature {
+    flex-direction: column;
+    text-align: center;
+    gap: 15px;
+  }
+  
+  /* Summary grid */
   .summary-grid {
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
   }
   
+  /* Footer */
   .footer-content {
     grid-template-columns: 1fr;
     text-align: center;
+    gap: 25px;
+  }
+  
+  /* Actions */
+  .temple-actions, .ngo-actions {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .edit-btn, .view-btn {
+    width: 100%;
+    justify-content: center;
   }
 }
 
+/* Mobile portrait */
 @media (max-width: 480px) {
   .wrap {
-    padding: 20px 12px;
+    padding: 16px 12px 40px;
   }
   
+  /* Header */
+  h1 {
+    font-size: clamp(20px, 7vw, 28px);
+    line-height: 1.2;
+  }
+  
+  .sub {
+    font-size: 13px;
+    line-height: 1.4;
+  }
+  
+  /* Temple cards */
   .temple-card {
-    padding: 20px;
+    padding: 16px;
+    border-radius: 12px;
   }
   
   .temple-header {
     flex-direction: column;
     align-items: flex-start;
+    gap: 10px;
   }
   
   .temple-status {
     text-align: left;
-    margin-top: 10px;
+    margin-top: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .temple-stats {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  
+  .stat-item {
+    padding: 10px;
+  }
+  
+  .ring {
+    width: 100px;
+    height: 100px;
+  }
+  
+  .percent {
+    font-size: 18px;
+  }
+  
+  /* NGO cards */
+  .ngo-card {
+    padding: 16px;
+    border-radius: 12px;
+  }
+  
+  .ngo-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+  }
+  
+  .ngo-card h3 {
+    font-size: 16px;
+  }
+  
+  .ngo-card p {
+    font-size: 13px;
+  }
+  
+  .ngo-contact span {
+    font-size: 12px;
+  }
+  
+  /* Future section */
+  .future-content {
+    padding: 20px;
+  }
+  
+  .future-intro h3 {
+    font-size: 22px;
+  }
+  
+  .future-intro p {
+    font-size: 14px;
+  }
+  
+  .feature-image {
+    width: 50px;
+    height: 50px;
+    font-size: 20px;
+  }
+  
+  .feature-content h4 {
+    font-size: 16px;
+  }
+  
+  .feature-content p {
+    font-size: 13px;
+  }
+  
+  /* Timeline */
+  .timeline-item {
+    min-width: 120px;
+    padding: 12px;
+  }
+  
+  .timeline-date {
+    font-size: 12px;
+  }
+  
+  .timeline-content {
+    font-size: 11px;
+  }
+  
+  /* Summary cards */
+  .summary-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  
+  .summary-card {
+    padding: 16px;
+    gap: 12px;
+  }
+  
+  .summary-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 18px;
+  }
+  
+  .summary-content h3 {
+    font-size: 20px;
+  }
+  
+  .summary-content p {
+    font-size: 13px;
+  }
+  
+  /* Buttons */
+  .edit-btn, .view-btn {
+    padding: 10px 16px;
+    font-size: 13px;
+  }
+}
+
+/* Extra small mobile devices */
+@media (max-width: 360px) {
+  .wrap {
+    padding: 12px 8px 30px;
+  }
+  
+  h1 {
+    font-size: 18px;
+  }
+  
+  .sub {
+    font-size: 12px;
+    padding: 0 5px;
+  }
+  
+  .temple-card, .ngo-card {
+    padding: 12px;
+  }
+  
+  .temple-info h3 {
+    font-size: 16px !important;
+  }
+  
+  .temple-location {
+    font-size: 12px !important;
+  }
+  
+  .device-info {
+    font-size: 10px !important;
+  }
+  
+  .ring {
+    width: 80px;
+    height: 80px;
+  }
+  
+  .percent {
+    font-size: 16px;
+  }
+  
+  .stat-item {
+    padding: 8px;
+  }
+  
+  .stat-label {
+    font-size: 10px !important;
+  }
+  
+  .stat-value {
+    font-size: 14px !important;
+  }
+  
+  .ngo-card h3 {
+    font-size: 14px !important;
+  }
+  
+  .ngo-card p {
+    font-size: 11px !important;
+  }
+  
+  .ngo-contact span {
+    font-size: 10px !important;
+  }
+  
+  .future-content {
+    padding: 16px;
+  }
+  
+  .future-intro h3 {
+    font-size: 18px;
+  }
+  
+  .future-intro p {
+    font-size: 12px;
+  }
+  
+  .feature-image {
+    width: 40px;
+    height: 40px;
+    font-size: 16px;
+  }
+  
+  .feature-content h4 {
+    font-size: 14px;
+  }
+  
+  .feature-content p {
+    font-size: 11px;
+  }
+  
+  .summary-card {
+    padding: 12px;
+  }
+  
+  .edit-btn, .view-btn {
+    padding: 8px 12px;
+    font-size: 11px;
+  }
+}
+
+/* Touch-friendly improvements for mobile */
+@media (max-width: 768px) {
+  /* Larger touch targets */
+  .edit-btn, .view-btn {
+    min-height: 44px;
+    padding: 12px 16px;
+  }
+  
+  .calibrate-btn,
+  .wifi-update-btn,
+  .smtp-update-btn,
+  .command-btn {
+    min-height: 44px;
+    padding: 12px 16px;
+  }
+  
+  /* Better spacing for touch */
+  .temple-actions, .ngo-actions {
+    gap: 12px;
+    margin-top: 16px;
+  }
+  
+  /* Improved form inputs for mobile */
+  .form-group input,
+  .form-group textarea {
+    min-height: 44px;
+    font-size: 16px; /* Prevents zoom on iOS */
+    padding: 12px 14px;
+  }
+  
+  /* Better select dropdowns */
+  select {
+    min-height: 44px;
+    font-size: 16px;
+    padding: 12px;
   }
 }
 
@@ -1776,14 +2131,24 @@ footer {
   color: var(--warning);
 }
 
-/* Responsive Design for Detail Page */
+/* Enhanced Responsive Design for Detail Page */
 @media (max-width: 1024px) {
   .overview-grid {
     grid-template-columns: 1fr 1fr;
+    gap: 20px;
   }
   
   .quick-stats-grid {
     grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .controls-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  
+  .device-info-grid {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   }
   
   .alerts-header, .alert-row {
@@ -1797,31 +2162,109 @@ footer {
 }
 
 @media (max-width: 768px) {
-  .overview-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .quick-stats-grid {
-    grid-template-columns: 1fr 1fr;
-  }
-  
+  /* Navigation */
   .nav-header {
     flex-direction: column;
     align-items: flex-start;
-    gap: 10px;
+    gap: 15px;
+    padding: 15px 0;
   }
   
+  .back-btn {
+    padding: 10px 16px;
+    font-size: 13px;
+  }
+  
+  .nav-title h1 {
+    font-size: 24px;
+  }
+  
+  /* Overview */
+  .overview-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  
+  .status-content {
+    flex-direction: column;
+    text-align: center;
+    gap: 20px;
+  }
+  
+  .ring-large {
+    width: 100px;
+    height: 100px;
+  }
+  
+  .percent-large {
+    font-size: 18px;
+  }
+  
+  /* Quick stats */
+  .quick-stats-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+  }
+  
+  .quick-stat-card {
+    padding: 16px;
+    gap: 12px;
+  }
+  
+  .quick-stat-card .stat-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 18px;
+  }
+  
+  .quick-stat-card .stat-content h3 {
+    font-size: 20px;
+  }
+  
+  .quick-stat-card .stat-content p {
+    font-size: 13px;
+  }
+  
+  /* Controls */
+  .controls-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  
+  .control-card {
+    padding: 20px;
+  }
+  
+  .control-card h3 {
+    font-size: 16px;
+  }
+  
+  .control-card p {
+    font-size: 13px;
+  }
+  
+  /* Device info */
+  .device-info-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  
+  .device-card {
+    padding: 20px;
+  }
+  
+  /* Section headers */
   .section-header {
     flex-direction: column;
     align-items: flex-start;
     gap: 15px;
   }
   
-  .status-content {
-    flex-direction: column;
-    text-align: center;
+  .section-header h2 {
+    font-size: 20px;
   }
   
+  /* Alerts */
   .alerts-header, .alert-row {
     grid-template-columns: 1fr 1fr 1fr;
   }
@@ -1833,6 +2276,7 @@ footer {
     display: none;
   }
   
+  /* Tables */
   .stats-table {
     font-size: 12px;
   }
@@ -1841,17 +2285,135 @@ footer {
   .stats-table td {
     padding: 8px 6px;
   }
+  
+  /* Forms */
+  .form-group input,
+  .form-group textarea {
+    font-size: 14px;
+    padding: 12px;
+  }
+  
+  .calibrate-btn,
+  .wifi-update-btn,
+  .smtp-update-btn {
+    padding: 12px 16px;
+    font-size: 14px;
+  }
 }
 
 @media (max-width: 480px) {
-  .device-info-grid {
-    grid-template-columns: 1fr;
+  /* Navigation */
+  .nav-header {
+    padding: 10px 0;
   }
   
+  .nav-title h1 {
+    font-size: 20px;
+  }
+  
+  .nav-subtitle {
+    font-size: 13px;
+  }
+  
+  /* Overview */
+  .overview-card {
+    padding: 16px;
+  }
+  
+  .overview-card h3 {
+    font-size: 16px;
+  }
+  
+  .ring-large {
+    width: 80px;
+    height: 80px;
+  }
+  
+  .percent-large {
+    font-size: 16px;
+  }
+  
+  .current-stat {
+    font-size: 13px;
+  }
+  
+  .stat-box {
+    padding: 12px;
+  }
+  
+  .stat-number {
+    font-size: 20px;
+  }
+  
+  .stat-label {
+    font-size: 11px;
+  }
+  
+  /* Quick stats */
   .quick-stats-grid {
     grid-template-columns: 1fr;
+    gap: 12px;
   }
   
+  .quick-stat-card {
+    padding: 14px;
+    gap: 10px;
+  }
+  
+  .quick-stat-card .stat-icon {
+    width: 35px;
+    height: 35px;
+    font-size: 16px;
+  }
+  
+  .quick-stat-card .stat-content h3 {
+    font-size: 18px;
+  }
+  
+  .quick-stat-card .stat-content p {
+    font-size: 12px;
+  }
+  
+  /* Controls */
+  .control-card {
+    padding: 16px;
+  }
+  
+  .control-card h3 {
+    font-size: 15px;
+  }
+  
+  .control-card p {
+    font-size: 12px;
+  }
+  
+  /* Device info */
+  .device-card {
+    padding: 16px;
+  }
+  
+  .device-card h3 {
+    font-size: 16px;
+  }
+  
+  .detail-item,
+  .config-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+  }
+  
+  .detail-label,
+  .config-label {
+    font-size: 12px;
+  }
+  
+  .detail-value,
+  .config-value {
+    font-size: 13px;
+  }
+  
+  /* Alerts */
   .alerts-header, .alert-row {
     grid-template-columns: 1fr 1fr;
   }
@@ -1859,6 +2421,60 @@ footer {
   .alerts-header .alert-col:nth-child(n+3),
   .alert-row .alert-col:nth-child(n+3) {
     display: none;
+  }
+  
+  .alert-col {
+    font-size: 12px;
+  }
+  
+  /* Tables */
+  .stats-table th,
+  .stats-table td {
+    padding: 6px 4px;
+    font-size: 11px;
+  }
+  
+  /* Forms */
+  .form-group {
+    margin-bottom: 12px;
+  }
+  
+  .form-group label {
+    font-size: 13px;
+  }
+  
+  .form-group input,
+  .form-group textarea {
+    font-size: 13px;
+    padding: 10px;
+  }
+  
+  .calibrate-btn,
+  .wifi-update-btn,
+  .smtp-update-btn,
+  .command-btn {
+    padding: 10px 14px;
+    font-size: 13px;
+  }
+  
+  /* Calibration steps */
+  .step {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .step-number {
+    width: 25px;
+    height: 25px;
+    font-size: 12px;
+  }
+  
+  .step-content strong {
+    font-size: 13px;
+  }
+  
+  .step-content p {
+    font-size: 11px;
   }
 }
 
