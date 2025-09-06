@@ -51,7 +51,7 @@ SanctiClean is an advanced IoT-based smart temple management system designed for
 
 ```
 bin/
-├── temple-dashboard.html      # Main dashboard page
+├── index.html                # Main dashboard page (root file)
 ├── temple-dashboard.js        # Dashboard functionality
 ├── temple-detail.html         # Individual temple details
 ├── temple-detail.js          # Temple detail functionality

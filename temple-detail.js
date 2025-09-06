@@ -102,7 +102,7 @@ function getTempleFromUrl() {
 }
 
 function goBack() {
-  window.location.href = 'temple-dashboard.html';
+  window.location.href = 'index.html';
 }
 
 /* ==== CURRENT STATUS MANAGEMENT ==== */

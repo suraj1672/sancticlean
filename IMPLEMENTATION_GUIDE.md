@@ -12,7 +12,7 @@ You now have a complete temple dashboard system with:
 ## 📁 Files Created/Updated
 
 ### Web Dashboard Files:
-1. **`temple-dashboard.html`** - Main dashboard with 4 temples
+1. **`index.html`** - Main dashboard with 4 temples
 2. **`temple-dashboard.js`** - Main dashboard JavaScript
 3. **`temple-detail.html`** - Detailed temple view page
 4. **`temple-detail.js`** - Temple detail page JavaScript
@@ -135,7 +135,7 @@ The system uses these Firestore collections:
 
 ## 🌐 How to Use the Dashboard
 
-### Main Dashboard (`temple-dashboard.html`):
+### Main Dashboard (`index.html`):
 - Shows all 4 temples with real-time status
 - NGO contact information at the top
 - Summary statistics at the bottom

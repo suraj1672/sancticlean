@@ -18,7 +18,7 @@ You now have two powerful new features in your temple dashboard system:
 
 ### **Accessing Device Controls**
 
-1. **Open Temple Dashboard** (`temple-dashboard.html`)
+1. **Open Temple Dashboard** (`index.html`)
 2. **Click on any temple card** to open detailed view
 3. **Scroll down to "Device Controls" section**
 

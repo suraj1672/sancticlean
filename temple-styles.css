@@ -83,18 +83,9 @@ h1{
   border: 1px solid var(--border);
   border-radius: 16px;
   padding: 20px;
-  transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
-  opacity: 0;
-  transform: translateY(20px);
-  animation: fadeInUp 0.6s ease-out forwards;
 }
-
-.ngo-card:nth-child(1) { animation-delay: 0.1s; }
-.ngo-card:nth-child(2) { animation-delay: 0.2s; }
-.ngo-card:nth-child(3) { animation-delay: 0.3s; }
-.ngo-card:nth-child(4) { animation-delay: 0.4s; }
 
 .ngo-card::before {
   content: '';
@@ -107,8 +98,6 @@ h1{
 }
 
 .ngo-card:hover {
-  transform: translateY(-8px) scale(1.02);
-  box-shadow: 0 20px 50px rgba(0,0,0,.5);
   border-color: var(--border-hover);
   background: var(--card-hover);
 }
@@ -188,18 +177,9 @@ h1{
   border-radius: 18px;
   box-shadow: var(--shadow);
   padding: 25px;
-  transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
-  opacity: 0;
-  transform: translateY(20px);
-  animation: fadeInUp 0.6s ease-out forwards;
 }
-
-.temple-card:nth-child(1) { animation-delay: 0.1s; }
-.temple-card:nth-child(2) { animation-delay: 0.2s; }
-.temple-card:nth-child(3) { animation-delay: 0.3s; }
-.temple-card:nth-child(4) { animation-delay: 0.4s; }
 
 .temple-card::before {
   content: '';
@@ -212,8 +192,6 @@ h1{
 }
 
 .temple-card:hover {
-  transform: translateY(-8px) scale(1.02);
-  box-shadow: 0 25px 60px rgba(0,0,0,.6);
   border-color: var(--border-hover);
   background: var(--card-hover);
 }
@@ -798,17 +776,7 @@ footer {
   animation: pulse 2s infinite;
 }
 
-/* Fade in up animation for cards */
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
+/* Removed fadeInUp animation */
 
 /* Alert styles for full bins */
 .temple-card.alert {
@@ -2186,21 +2154,9 @@ header {
   border-left: 4px solid var(--warning);
 }
 
-/* Hover effects for interactive elements */
-.temple-card:hover {
-  animation: none;
-  transform: translateY(-8px) scale(1.02);
-}
+/* Hover effects for interactive elements - removed animations */
 
-.ngo-card:hover {
-  animation: none;
-  transform: translateY(-8px) scale(1.02);
-}
-
-/* Smooth transitions for all interactive elements */
-* {
-  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
-}
+/* Removed smooth transitions to eliminate animations */
 
 /* Reduce motion for users who prefer it */
 @media (prefers-reduced-motion: reduce) {
