@@ -851,10 +851,12 @@ function updateWiFiConfig() {
     command: 'update_wifi',
     ssid: newSSID,
     password: newPassword,
-    timestamp: new Date().toISOString(),
-    requestedBy: 'dashboard'
+    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+    requestedBy: 'dashboard',
+    status: 'pending'
   };
   
+  // Try to add to deviceCommands collection with better error handling
   db.collection('deviceCommands').add(wifiData)
     .then(() => {
       showStatusMessage('WiFi configuration sent to device. Device will restart with new settings.', 'success');
@@ -879,89 +881,74 @@ function updateWiFiConfig() {
     });
 }
 
-// SMTP configuration
+// SMTP configuration - Simplified to only update recipient emails
 function updateSMTPConfig() {
-  const smtpServer = document.getElementById('smtp-server');
-  const smtpPort = document.getElementById('smtp-port');
-  const smtpEmail = document.getElementById('smtp-email');
-  const smtpPassword = document.getElementById('smtp-password');
   const smtpRecipients = document.getElementById('smtp-recipients');
   const updateBtn = document.getElementById('smtp-update-btn');
   
-  if (!smtpServer || !smtpPort || !smtpEmail || !smtpPassword || !smtpRecipients || !updateBtn) {
+  if (!smtpRecipients || !updateBtn) {
     console.error('SMTP form elements not found');
     return;
   }
   
-  const server = smtpServer.value.trim();
-  const port = parseInt(smtpPort.value.trim());
-  const email = smtpEmail.value.trim();
-  const password = smtpPassword.value.trim();
   const recipients = smtpRecipients.value.trim();
   
-  if (!server || !port || !email || !password || !recipients) {
-    showStatusMessage('Please fill in all SMTP fields', 'error');
-    return;
-  }
-  
-  // Validate email format
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!emailRegex.test(email)) {
-    showStatusMessage('Please enter a valid sender email address', 'error');
+  if (!recipients) {
+    showStatusMessage('Please enter at least one recipient email address', 'error');
     return;
   }
   
   // Validate recipients
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   const recipientList = recipients.split(',').map(r => r.trim()).filter(r => r);
   const invalidRecipients = recipientList.filter(r => !emailRegex.test(r));
+  
   if (invalidRecipients.length > 0) {
-    showStatusMessage('Please enter valid recipient email addresses', 'error');
+    showStatusMessage('Please enter valid email addresses. Invalid: ' + invalidRecipients.join(', '), 'error');
     return;
   }
   
   updateBtn.disabled = true;
-  updateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating SMTP...';
+  updateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating Recipients...';
   
-  // Send SMTP configuration to device
-  const smtpData = {
+  // Send email recipients update to device
+  const emailData = {
     deviceId: currentDeviceId,
-    command: 'update_smtp',
-    smtpServer: server,
-    smtpPort: port,
-    smtpEmail: email,
-    smtpPassword: password,
-    smtpRecipients: recipientList,
-    timestamp: new Date().toISOString(),
-    requestedBy: 'dashboard'
+    command: 'update_email_recipients',
+    recipients: recipientList,
+    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+    requestedBy: 'dashboard',
+    status: 'pending'
   };
   
-  db.collection('deviceCommands').add(smtpData)
+  // Try multiple collections to ensure delivery
+  Promise.all([
+    db.collection('deviceCommands').add(emailData),
+    db.collection('emailConfig').doc(currentDeviceId).set({
+      recipients: recipientList,
+      lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),
+      updatedBy: 'dashboard'
+    }, { merge: true })
+  ])
     .then(() => {
-      showStatusMessage('SMTP configuration sent to device successfully!', 'success');
-      
-      // Clear form
-      smtpServer.value = '';
-      smtpPort.value = '587';
-      smtpEmail.value = '';
-      smtpPassword.value = '';
-      smtpRecipients.value = '';
+      showStatusMessage(`Email recipients updated successfully! ${recipientList.length} recipient(s) configured.`, 'success');
       
       // Update current SMTP status
       setTimeout(() => {
         const currentSmtpEl = document.getElementById('current-smtp-status');
         if (currentSmtpEl) {
-          currentSmtpEl.textContent = 'Configured';
+          currentSmtpEl.textContent = `${recipientList.length} recipient(s) configured`;
           currentSmtpEl.style.color = 'var(--success)';
         }
-      }, 2000);
+      }, 1000);
     })
     .catch((error) => {
-      console.error('SMTP update error:', error);
-      showStatusMessage('Failed to send SMTP configuration: ' + error.message, 'error');
+      console.error('Email recipients update error:', error);
+      showStatusMessage('Failed to update email recipients: ' + error.message, 'error');
     })
     .finally(() => {
       updateBtn.disabled = false;
-      updateBtn.innerHTML = '<i class="fas fa-envelope"></i> Update SMTP Settings';
+      updateBtn.innerHTML = '<i class="fas fa-envelope"></i> Update Email Recipients';
     });
 }
 

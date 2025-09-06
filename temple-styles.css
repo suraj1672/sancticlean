@@ -1623,6 +1623,14 @@ footer {
   color: var(--muted);
 }
 
+.form-help {
+  color: var(--muted);
+  font-size: 12px;
+  margin-top: 5px;
+  line-height: 1.4;
+  font-style: italic;
+}
+
 .wifi-update-btn {
   background: var(--success);
   color: white;

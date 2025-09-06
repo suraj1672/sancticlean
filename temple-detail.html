@@ -238,27 +238,12 @@
             </div>
             <div class="smtp-form">
               <div class="form-group">
-                <label for="smtp-server">SMTP Server:</label>
-                <input type="text" id="smtp-server" placeholder="smtp.gmail.com">
-              </div>
-              <div class="form-group">
-                <label for="smtp-port">SMTP Port:</label>
-                <input type="number" id="smtp-port" placeholder="587" value="587">
-              </div>
-              <div class="form-group">
-                <label for="smtp-email">Sender Email:</label>
-                <input type="email" id="smtp-email" placeholder="your-email@gmail.com">
-              </div>
-              <div class="form-group">
-                <label for="smtp-password">Email Password:</label>
-                <input type="password" id="smtp-password" placeholder="App password">
-              </div>
-              <div class="form-group">
-                <label for="smtp-recipients">Recipient Emails (comma separated):</label>
-                <textarea id="smtp-recipients" placeholder="admin@temple.com, manager@temple.com" rows="3"></textarea>
+                <label for="smtp-recipients">Notification Email Recipients (comma separated):</label>
+                <textarea id="smtp-recipients" placeholder="admin@temple.com, manager@temple.com, alerts@temple.com" rows="3"></textarea>
+                <small class="form-help">Enter email addresses separated by commas. These emails will receive bin full notifications.</small>
               </div>
               <button class="smtp-update-btn" id="smtp-update-btn" onclick="updateSMTPConfig()">
-                <i class="fas fa-envelope"></i> Update SMTP Settings
+                <i class="fas fa-envelope"></i> Update Email Recipients
               </button>
             </div>
           </div>
