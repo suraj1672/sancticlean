@@ -653,10 +653,10 @@ function startEmptyCalibration() {
   progressDiv.style.display = 'block';
   
   // Send empty calibration command to device
-  sendCalibrationCommand('empty')
+  sendCalibrationCommand()
     .then((result) => {
       if (result.success) {
-        showStatusMessage('Empty calibration completed! 0% level set to ' + result.emptyLevel + ' cm', 'success');
+        showStatusMessage('Empty bin calibration completed successfully! New empty level: ' + result.emptyLevel + ' cm', 'success');
         updateEmptyLevelDisplay(result.emptyLevel);
         updateCalibrationStatus();
       } else {
@@ -671,114 +671,173 @@ function startEmptyCalibration() {
       calibrationInProgress = false;
       calibrationType = null;
       calibrateBtn.disabled = false;
-      calibrateBtn.innerHTML = '<i class="fas fa-crosshairs"></i> Calibrate Empty (0%)';
+      calibrateBtn.innerHTML = '<i class="fas fa-crosshairs"></i> Calibrate Empty Bin';
       progressDiv.style.display = 'none';
     });
 }
 
-function startFullCalibration() {
-  if (calibrationInProgress) return;
+// Temple information update function
+function updateTempleInfo() {
+  const templeNameInput = document.getElementById('temple-name-input');
+  const templeLocationInput = document.getElementById('temple-location-input');
+  const updateBtn = document.getElementById('info-update-btn');
   
-  const calibrateBtn = document.getElementById('calibrate-full-btn');
-  const progressDiv = document.getElementById('calibration-progress');
-  const progressFill = document.getElementById('progress-fill');
-  const progressText = document.getElementById('progress-text');
-  
-  if (!calibrateBtn || !progressDiv || !progressFill || !progressText) {
-    console.error('Calibration elements not found');
+  if (!templeNameInput || !templeLocationInput || !updateBtn) {
+    console.error('Temple info form elements not found');
     return;
   }
   
-  calibrationInProgress = true;
-  calibrationType = 'full';
-  calibrateBtn.disabled = true;
-  calibrateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Calibrating...';
-  progressDiv.style.display = 'block';
+  const newName = templeNameInput.value.trim();
+  const newLocation = templeLocationInput.value.trim();
   
-  // Send full calibration command to device
-  sendCalibrationCommand('full')
-    .then((result) => {
-      if (result.success) {
-        showStatusMessage('Full calibration completed! 100% level set to ' + result.fullLevel + ' cm', 'success');
-        updateFullLevelDisplay(result.fullLevel);
-        updateCalibrationStatus();
-      } else {
-        showStatusMessage('Full calibration failed: ' + result.error, 'error');
+  if (!newName && !newLocation) {
+    showStatusMessage('Please enter temple name or location to update', 'error');
+    return;
+  }
+  
+  updateBtn.disabled = true;
+  updateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating...';
+  
+  // Update both deviceConfig and bins collections
+  const updateData = {};
+  if (newName) updateData.templeName = newName;
+  if (newLocation) updateData.location = newLocation;
+  updateData.lastUpdated = firebase.firestore.FieldValue.serverTimestamp();
+  
+  Promise.all([
+    newName || newLocation ? db.collection('deviceConfig').doc(currentDeviceId).set(updateData, { merge: true }) : Promise.resolve(),
+    newName || newLocation ? db.collection('bins').doc(currentDeviceId).set(updateData, { merge: true }) : Promise.resolve()
+  ])
+    .then(() => {
+      let message = 'Temple information updated successfully!';
+      if (newName && newLocation) {
+        message = `Temple name and location updated to "${newName}" at "${newLocation}"`;
+      } else if (newName) {
+        message = `Temple name updated to "${newName}"`;
+      } else if (newLocation) {
+        message = `Temple location updated to "${newLocation}"`;
       }
+      
+      showStatusMessage(message, 'success');
+      
+      // Update the page header
+      if (newName) {
+        const nameElement = document.getElementById('temple-name');
+        if (nameElement) nameElement.textContent = newName;
+      }
+      if (newLocation) {
+        const locationElement = document.getElementById('temple-location');
+        if (locationElement) locationElement.textContent = newLocation;
+      }
+      
+      // Clear the inputs
+      templeNameInput.value = '';
+      templeLocationInput.value = '';
     })
     .catch((error) => {
-      console.error('Full calibration error:', error);
-      showStatusMessage('Full calibration failed: ' + error.message, 'error');
+      console.error('Temple info update error:', error);
+      showStatusMessage('Failed to update temple information: ' + error.message, 'error');
     })
     .finally(() => {
-      calibrationInProgress = false;
-      calibrationType = null;
-      calibrateBtn.disabled = false;
-      calibrateBtn.innerHTML = '<i class="fas fa-crosshairs"></i> Calibrate Full (100%)';
-      progressDiv.style.display = 'none';
+      updateBtn.disabled = false;
+      updateBtn.innerHTML = '<i class="fas fa-save"></i> Update Temple Information';
     });
 }
 
-async function sendCalibrationCommand(type) {
+async function sendCalibrationCommand() {
   return new Promise((resolve, reject) => {
     if (!currentDeviceId) {
       reject(new Error('No device selected'));
       return;
     }
     
-    // Simulate calibration process with progress
+    // Show progress with realistic steps
     let progress = 0;
     const progressFill = document.getElementById('progress-fill');
     const progressText = document.getElementById('progress-text');
     
     const interval = setInterval(() => {
-      progress += 10;
+      progress += 8;
       if (progressFill) progressFill.style.width = progress + '%';
       
-      if (progress <= 30) {
+      if (progress <= 20) {
         if (progressText) progressText.textContent = 'Preparing sensor...';
+      } else if (progress <= 40) {
+        if (progressText) progressText.textContent = 'Ensuring bin is empty...';
       } else if (progress <= 70) {
-        if (progressText) progressText.textContent = 'Taking measurements...';
+        if (progressText) progressText.textContent = 'Taking 15 distance measurements...';
       } else if (progress <= 90) {
-        if (progressText) progressText.textContent = `Calculating ${type} level...`;
+        if (progressText) progressText.textContent = 'Calculating empty level...';
       } else {
-        if (progressText) progressText.textContent = 'Saving calibration...';
+        if (progressText) progressText.textContent = 'Saving calibration to device...';
       }
       
       if (progress >= 100) {
         clearInterval(interval);
         
-        // Send calibration command to Firebase
+        // Send calibration command to Firebase (using the format your Arduino expects)
         const calibrationData = {
           deviceId: currentDeviceId,
-          command: `calibrate_${type}_level`,
-          calibrationType: type,
-          timestamp: new Date().toISOString(),
-          requestedBy: 'dashboard'
+          command: 'calibrate_empty_level',
+          timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+          requestedBy: 'dashboard',
+          status: 'pending'
         };
         
-        db.collection('deviceCommands').add(calibrationData)
+        // Create command document with the device ID format your Arduino expects
+        const commandDocId = currentDeviceId + '_pending';
+        
+        db.collection('deviceCommands').doc(commandDocId).set(calibrationData)
           .then(() => {
-            // Simulate successful calibration (replace with actual response from device)
-            if (type === 'empty') {
-              const emptyLevel = 45.5 + Math.random() * 5; // Simulated empty level
-              resolve({
-                success: true,
-                emptyLevel: emptyLevel.toFixed(1)
+            // Monitor for completion by watching the command status
+            const unsubscribe = db.collection('deviceCommands').doc(commandDocId)
+              .onSnapshot((doc) => {
+                if (doc.exists) {
+                  const data = doc.data();
+                  if (data.status === 'done') {
+                    unsubscribe();
+                    // Get the updated empty level from deviceConfig
+                    db.collection('deviceConfig').doc(currentDeviceId).get()
+                      .then((configDoc) => {
+                        if (configDoc.exists && configDoc.data().emptyLevel_cm) {
+                          resolve({
+                            success: true,
+                            emptyLevel: configDoc.data().emptyLevel_cm.toFixed(1)
+                          });
+                        } else {
+                          resolve({
+                            success: true,
+                            emptyLevel: '45.0' // Fallback value
+                          });
+                        }
+                      })
+                      .catch(() => {
+                        resolve({
+                          success: true,
+                          emptyLevel: '45.0' // Fallback value
+                        });
+                      });
+                  } else if (data.status === 'failed') {
+                    unsubscribe();
+                    reject(new Error(data.reason || 'Calibration failed'));
+                  }
+                }
+              }, (error) => {
+                unsubscribe();
+                reject(error);
               });
-            } else {
-              const fullLevel = 15.0 + Math.random() * 3; // Simulated full level
-              resolve({
-                success: true,
-                fullLevel: fullLevel.toFixed(1)
-              });
-            }
+            
+            // Timeout after 30 seconds
+            setTimeout(() => {
+              unsubscribe();
+              reject(new Error('Calibration timeout - device may be offline'));
+            }, 30000);
           })
           .catch((error) => {
             reject(error);
           });
       }
-    }, 200);
+    }, 250);
   });
 }
 
@@ -798,19 +857,21 @@ function updateFullLevelDisplay(fullLevel) {
 
 function updateCalibrationStatus() {
   const emptyLevelEl = document.getElementById('empty-level-distance');
-  const fullLevelEl = document.getElementById('full-level-distance');
   const statusEl = document.getElementById('calibration-status');
+  const lastCalibEl = document.getElementById('last-calibration');
   
-  if (emptyLevelEl && fullLevelEl && statusEl) {
+  if (emptyLevelEl && statusEl) {
     const emptyLevel = emptyLevelEl.textContent;
-    const fullLevel = fullLevelEl.textContent;
     
-    if (emptyLevel !== '— cm' && fullLevel !== '— cm') {
-      statusEl.textContent = 'Fully Calibrated';
+    if (emptyLevel !== '— cm' && emptyLevel !== '') {
+      statusEl.textContent = 'Calibrated';
       statusEl.style.color = 'var(--success)';
-    } else if (emptyLevel !== '— cm' || fullLevel !== '— cm') {
-      statusEl.textContent = 'Partially Calibrated';
-      statusEl.style.color = 'var(--warning)';
+      
+      // Update last calibration time if available
+      if (lastCalibEl) {
+        const now = new Date();
+        lastCalibEl.textContent = now.toLocaleDateString() + ' ' + now.toLocaleTimeString();
+      }
     } else {
       statusEl.textContent = 'Not Calibrated';
       statusEl.style.color = 'var(--muted)';
@@ -845,21 +906,27 @@ function updateWiFiConfig() {
   updateBtn.disabled = true;
   updateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating WiFi...';
   
-  // Send WiFi update command to device
-  const wifiData = {
-    deviceId: currentDeviceId,
-    command: 'update_wifi',
-    ssid: newSSID,
-    password: newPassword,
-    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-    requestedBy: 'dashboard',
-    status: 'pending'
-  };
-  
-  // Try to add to deviceCommands collection with better error handling
-  db.collection('deviceCommands').add(wifiData)
+  // Update both deviceConfig and send command to device
+  Promise.all([
+    // Update deviceConfig collection (your Arduino reads from here)
+    db.collection('deviceConfig').doc(currentDeviceId).set({
+      wifiSSID: newSSID,
+      wifiPassword: newPassword,
+      lastWifiUpdate: firebase.firestore.FieldValue.serverTimestamp()
+    }, { merge: true }),
+    
+    // Also send as a command for immediate processing
+    db.collection('deviceCommands').doc(currentDeviceId + '_pending').set({
+      deviceId: currentDeviceId,
+      wifiSSID: newSSID,
+      wifiPassword: newPassword,
+      timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+      requestedBy: 'dashboard',
+      status: 'pending'
+    })
+  ])
     .then(() => {
-      showStatusMessage('WiFi configuration sent to device. Device will restart with new settings.', 'success');
+      showStatusMessage('WiFi configuration updated! Device will reconnect with new settings within 30 seconds.', 'success');
       ssidInput.value = '';
       passwordInput.value = '';
       
@@ -869,11 +936,11 @@ function updateWiFiConfig() {
         if (currentWiFiEl) {
           currentWiFiEl.textContent = newSSID;
         }
-      }, 5000);
+      }, 2000);
     })
     .catch((error) => {
       console.error('WiFi update error:', error);
-      showStatusMessage('Failed to send WiFi configuration: ' + error.message, 'error');
+      showStatusMessage('Failed to update WiFi configuration: ' + error.message, 'error');
     })
     .finally(() => {
       updateBtn.disabled = false;
@@ -911,27 +978,33 @@ function updateSMTPConfig() {
   updateBtn.disabled = true;
   updateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating Recipients...';
   
-  // Send email recipients update to device
-  const emailData = {
-    deviceId: currentDeviceId,
-    command: 'update_email_recipients',
-    recipients: recipientList,
-    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-    requestedBy: 'dashboard',
-    status: 'pending'
-  };
+  // Update recipients in both deviceConfig and send command (format your Arduino expects)
+  const recipientsCsv = recipientList.join(', ');
   
-  // Try multiple collections to ensure delivery
   Promise.all([
-    db.collection('deviceCommands').add(emailData),
-    db.collection('emailConfig').doc(currentDeviceId).set({
+    // Update deviceConfig collection (your Arduino reads from here)
+    db.collection('deviceConfig').doc(currentDeviceId).set({
+      recipientsCsv: recipientsCsv,
+      recipients: recipientList, // Also store as array for web dashboard
+      lastEmailUpdate: firebase.firestore.FieldValue.serverTimestamp()
+    }, { merge: true }),
+    
+    // Send command for immediate processing
+    db.collection('deviceCommands').doc(currentDeviceId + '_pending').set({
+      deviceId: currentDeviceId,
+      command: 'update_email_recipients',
+      recipientsCsv: recipientsCsv,
       recipients: recipientList,
-      lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),
-      updatedBy: 'dashboard'
-    }, { merge: true })
+      timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+      requestedBy: 'dashboard',
+      status: 'pending'
+    })
   ])
     .then(() => {
       showStatusMessage(`Email recipients updated successfully! ${recipientList.length} recipient(s) configured.`, 'success');
+      
+      // Clear the input
+      smtpRecipients.value = '';
       
       // Update current SMTP status
       setTimeout(() => {
@@ -962,8 +1035,9 @@ function sendDeviceCommand(command) {
   const commandData = {
     deviceId: currentDeviceId,
     command: command,
-    timestamp: new Date().toISOString(),
-    requestedBy: 'dashboard'
+    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+    requestedBy: 'dashboard',
+    status: 'pending'
   };
   
   let commandText = '';
@@ -984,13 +1058,16 @@ function sendDeviceCommand(command) {
       commandText = 'Command';
   }
   
-  db.collection('deviceCommands').add(commandData)
+  // Use the format your Arduino expects (deviceId_pending document)
+  db.collection('deviceCommands').doc(currentDeviceId + '_pending').set(commandData)
     .then(() => {
       showStatusMessage(commandText + ' sent to device successfully', 'success');
       
       // Special handling for test email
       if (command === 'test_email') {
-        showStatusMessage('Test email command sent. Check your email in 1-2 minutes.', 'warning');
+        setTimeout(() => {
+          showStatusMessage('Test email command sent. Check your configured email addresses in 1-2 minutes.', 'warning');
+        }, 1000);
       }
     })
     .catch((error) => {

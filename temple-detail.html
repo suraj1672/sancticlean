@@ -148,33 +148,18 @@
             </div>
             
             <div class="calibration-steps">
-              <h4>Calibration Steps:</h4>
-              <div class="step">
+              <h4>Empty Bin Calibration:</h4>
+              <div class="step single-step">
                 <div class="step-number">1</div>
                 <div class="step-content">
                   <strong>Empty Bin Calibration</strong>
-                  <p>Ensure bin is completely empty, then calibrate 0% level</p>
+                  <p>Ensure bin is completely empty, then calibrate the 0% level. The device will automatically calculate full levels based on this baseline.</p>
                   <div class="current-reading">
                     <span class="label">Current Distance:</span>
                     <span class="value" id="current-raw-distance">— cm</span>
                   </div>
-                  <button class="calibrate-btn" id="calibrate-empty-btn" onclick="startEmptyCalibration()">
-                    <i class="fas fa-crosshairs"></i> Calibrate Empty (0%)
-                  </button>
-                </div>
-              </div>
-              
-              <div class="step">
-                <div class="step-number">2</div>
-                <div class="step-content">
-                  <strong>Full Bin Calibration</strong>
-                  <p>Fill bin to maximum capacity, then calibrate 100% level</p>
-                  <div class="current-reading">
-                    <span class="label">Current Distance:</span>
-                    <span class="value" id="current-full-distance">— cm</span>
-                  </div>
-                  <button class="calibrate-btn" id="calibrate-full-btn" onclick="startFullCalibration()">
-                    <i class="fas fa-crosshairs"></i> Calibrate Full (100%)
+                  <button class="calibrate-btn primary" id="calibrate-empty-btn" onclick="startEmptyCalibration()">
+                    <i class="fas fa-crosshairs"></i> Calibrate Empty Bin
                   </button>
                 </div>
               </div>
@@ -186,8 +171,12 @@
                 <span class="value" id="empty-level-distance">— cm</span>
               </div>
               <div class="status-item">
-                <span class="label">Full Level (100%):</span>
-                <span class="value" id="full-level-distance">— cm</span>
+                <span class="label">Bin Depth:</span>
+                <span class="value" id="bin-depth-distance">— cm</span>
+              </div>
+              <div class="status-item">
+                <span class="label">Last Calibration:</span>
+                <span class="value" id="last-calibration">Never</span>
               </div>
               <div class="status-item">
                 <span class="label">Calibration Status:</span>
@@ -246,6 +235,24 @@
                 <i class="fas fa-envelope"></i> Update Email Recipients
               </button>
             </div>
+          </div>
+        </div>
+
+        <div class="control-card">
+          <h3><i class="fas fa-edit"></i> Temple Information</h3>
+          <p>Update temple name and location details for this device.</p>
+          <div class="temple-info-controls">
+            <div class="form-group">
+              <label for="temple-name-input">Temple Name:</label>
+              <input type="text" id="temple-name-input" placeholder="Enter temple name">
+            </div>
+            <div class="form-group">
+              <label for="temple-location-input">Temple Location:</label>
+              <input type="text" id="temple-location-input" placeholder="Enter temple location">
+            </div>
+            <button class="info-update-btn" id="info-update-btn" onclick="updateTempleInfo()">
+              <i class="fas fa-save"></i> Update Temple Information
+            </button>
           </div>
         </div>
 
