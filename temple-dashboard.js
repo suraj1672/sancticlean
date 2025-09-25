@@ -89,6 +89,12 @@ let dailyStats = {
   lastSync: null
 };
 
+/* ==== FOOTER CONTACT CONFIGURATION ==== */
+let FOOTER_CONTACT = {
+  email: "support@templedashboard.com",
+  phone: "+91 674-XXXX-XXXX"
+};
+
 /* ==== SUPABASE NGO FUNCTIONS ==== */
 async function loadNGOsFromSupabase() {
   try {
@@ -192,6 +198,281 @@ async function saveNGOToSupabase(ngoId, ngoData) {
   } catch (error) {
     console.error('Error saving NGO:', error);
     throw error;
+  }
+}
+
+/* ==== SUPABASE TEMPLE FUNCTIONS ==== */
+async function loadTemplesFromSupabase() {
+  try {
+    const { data, error } = await supabase
+      .from('temples')
+      .select('*')
+      .order('created_at', { ascending: true });
+
+    if (error) {
+      console.error('Error loading temples from Supabase:', error);
+      return;
+    }
+
+    // Update the TEMPLES object with data from Supabase
+    if (data && data.length > 0) {
+      data.forEach(temple => {
+        if (TEMPLES[temple.id]) {
+          TEMPLES[temple.id] = {
+            ...TEMPLES[temple.id], // Keep existing properties like deviceId, fullCountToday, notifications
+            name: temple.name,
+            location: temple.location
+          };
+          
+          // Update the UI elements
+          updateTempleUI(temple.id, temple);
+        }
+      });
+    } else {
+      // If no data exists, initialize with default data
+      await initializeTemplesInSupabase();
+    }
+  } catch (error) {
+    console.error('Error loading temples:', error);
+    // If there's an error, initialize with default data
+    await initializeTemplesInSupabase();
+  }
+}
+
+function updateTempleUI(templeId, templeData) {
+  const nameElement = document.querySelector(`[data-temple="${templeId}"] h3`);
+  const locationElement = document.querySelector(`[data-temple="${templeId}"] .temple-location`);
+
+  if (nameElement) {
+    // Extract text content without the icon
+    const iconElement = nameElement.querySelector('i');
+    if (iconElement) {
+      nameElement.innerHTML = `<i class="fas fa-place-of-worship"></i> ${templeData.name}`;
+    } else {
+      nameElement.textContent = templeData.name;
+    }
+  }
+  if (locationElement) {
+    locationElement.textContent = templeData.location;
+  }
+}
+
+async function saveTempleToSupabase(templeId, templeData) {
+  try {
+    const { data, error } = await supabase
+      .from('temples')
+      .upsert({
+        id: templeId,
+        name: templeData.name,
+        location: templeData.location,
+        device_id: templeData.deviceId,
+        updated_at: new Date().toISOString()
+      });
+
+    if (error) {
+      console.error('Error saving temple to Supabase:', error);
+      throw error;
+    }
+
+    return data;
+  } catch (error) {
+    console.error('Error saving temple:', error);
+    throw error;
+  }
+}
+
+async function initializeTemplesInSupabase() {
+  try {
+    console.log('Initializing temple data in Supabase...');
+    
+    // Insert default temple data
+    const templeData = Object.entries(TEMPLES).map(([id, temple]) => ({
+      id: id,
+      name: temple.name,
+      location: temple.location,
+      device_id: temple.deviceId,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    }));
+
+    const { data, error } = await supabase
+      .from('temples')
+      .insert(templeData);
+
+    if (error) {
+      console.error('Error initializing temples in Supabase:', error);
+    } else {
+      console.log('Temple data initialized successfully in Supabase');
+    }
+  } catch (error) {
+    console.error('Error initializing temples:', error);
+  }
+}
+
+/* ==== SUPABASE FOOTER CONTACT FUNCTIONS ==== */
+async function loadFooterContactFromSupabase() {
+  try {
+    const { data, error } = await supabase
+      .from('footer_contact')
+      .select('*')
+      .eq('id', 'main')
+      .single();
+
+    if (error) {
+      console.error('Error loading footer contact from Supabase:', error);
+      return;
+    }
+
+    // Update the FOOTER_CONTACT object with data from Supabase
+    if (data) {
+      FOOTER_CONTACT.email = data.email;
+      FOOTER_CONTACT.phone = data.phone;
+      
+      // Update the UI elements
+      updateFooterContactUI(data);
+    } else {
+      // If no data exists, initialize with default data
+      await initializeFooterContactInSupabase();
+    }
+  } catch (error) {
+    console.error('Error loading footer contact:', error);
+    // If there's an error, initialize with default data
+    await initializeFooterContactInSupabase();
+  }
+}
+
+function updateFooterContactUI(contactData) {
+  const emailElement = document.getElementById('footer-email');
+  const phoneElement = document.getElementById('footer-phone');
+
+  if (emailElement) emailElement.textContent = contactData.email;
+  if (phoneElement) phoneElement.textContent = contactData.phone;
+}
+
+async function saveFooterContactToSupabase(contactData) {
+  try {
+    const { data, error } = await supabase
+      .from('footer_contact')
+      .upsert({
+        id: 'main',
+        email: contactData.email,
+        phone: contactData.phone,
+        updated_at: new Date().toISOString()
+      });
+
+    if (error) {
+      console.error('Error saving footer contact to Supabase:', error);
+      throw error;
+    }
+
+    return data;
+  } catch (error) {
+    console.error('Error saving footer contact:', error);
+    throw error;
+  }
+}
+
+async function initializeFooterContactInSupabase() {
+  try {
+    console.log('Initializing footer contact data in Supabase...');
+    
+    const { data, error } = await supabase
+      .from('footer_contact')
+      .insert({
+        id: 'main',
+        email: FOOTER_CONTACT.email,
+        phone: FOOTER_CONTACT.phone,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      });
+
+    if (error) {
+      console.error('Error initializing footer contact in Supabase:', error);
+    } else {
+      console.log('Footer contact data initialized successfully in Supabase');
+    }
+  } catch (error) {
+    console.error('Error initializing footer contact:', error);
+  }
+}
+
+/* ==== FOOTER CONTACT EDIT FUNCTIONS ==== */
+function editFooterContact(e) {
+  e.stopPropagation(); // prevent bubbling
+  
+  const footerSection = e.target.closest('.footer-section');
+  const originalContent = footerSection.innerHTML;
+  
+  // Create edit form
+  const editForm = document.createElement('div');
+  editForm.className = 'edit-form';
+  editForm.innerHTML = `
+    <div class="edit-form-content" onclick="event.stopPropagation()">
+      <h4>Edit Contact Information</h4>
+      <div class="form-group">
+        <label>Email:</label>
+        <input type="email" id="edit-footer-email" value="${FOOTER_CONTACT.email}" onclick="event.stopPropagation()">
+      </div>
+      <div class="form-group">
+        <label>Phone:</label>
+        <input type="text" id="edit-footer-phone" value="${FOOTER_CONTACT.phone}" onclick="event.stopPropagation()">
+      </div>
+      <div class="form-actions" onclick="event.stopPropagation()">
+        <button class="save-btn" onclick="saveFooterContact(event)">Save</button>
+        <button class="cancel-btn" onclick="cancelFooterEdit(event)">Cancel</button>
+      </div>
+    </div>
+  `;
+  
+  footerSection.innerHTML = '';
+  footerSection.appendChild(editForm);
+  footerSection.dataset.originalContent = originalContent;
+}
+
+async function saveFooterContact(e) {
+  e.stopPropagation(); // prevent bubbling
+  
+  const newEmail = document.getElementById('edit-footer-email').value.trim();
+  const newPhone = document.getElementById('edit-footer-phone').value.trim();
+  
+  if (!newEmail || !newPhone) {
+    alert('Please fill in all fields');
+    return;
+  }
+  
+  // Update footer contact data
+  FOOTER_CONTACT.email = newEmail;
+  FOOTER_CONTACT.phone = newPhone;
+  
+  try {
+    // Save to Supabase
+    await saveFooterContactToSupabase({
+      email: newEmail,
+      phone: newPhone
+    });
+    
+    // Restore footer section with updated data
+    restoreFooterSection();
+    showMessage('Contact information updated successfully!', 'success');
+    window.location.reload();
+  } catch (error) {
+    console.error('Error saving footer contact:', error);
+    showMessage('Error saving contact information', 'error');
+  }
+}
+
+function cancelFooterEdit(e) {
+  e.stopPropagation(); // prevent bubbling
+  restoreFooterSection();
+}
+
+function restoreFooterSection() {
+  const footerSection = document.querySelector('.footer-section:nth-child(2)');
+  const originalContent = footerSection.dataset.originalContent;
+  
+  if (originalContent) {
+    footerSection.innerHTML = originalContent;
+    delete footerSection.dataset.originalContent;
   }
 }
 
@@ -451,8 +732,16 @@ async function initializeDashboard() {
     // Load NGO data from Supabase
     console.log("📋 Loading NGO data from Supabase...");
     await loadNGOsFromSupabase();
+    
+    // Load Temple data from Supabase
+    console.log("🏛️ Loading Temple data from Supabase...");
+    await loadTemplesFromSupabase();
+    
+    // Load Footer Contact data from Supabase
+    console.log("📞 Loading Footer Contact data from Supabase...");
+    await loadFooterContactFromSupabase();
   } else {
-    console.warn("⚠️ Supabase connection failed, using default NGO data");
+    console.warn("⚠️ Supabase connection failed, using default data");
   }
 
   // Start watching all temple devices
@@ -538,7 +827,9 @@ function simulateTempleData(templeId, fillPercent, status) {
 /* ==== EDIT FUNCTIONALITY ==== */
 
 // Temple edit functions
-function editTemple(templeId) {
+function editTemple(e, templeId) {
+  e.stopPropagation(); // prevent bubbling
+
   const temple = TEMPLES[templeId];
   if (!temple) return;
 
@@ -551,19 +842,19 @@ function editTemple(templeId) {
   const editForm = document.createElement('div');
   editForm.className = 'edit-form';
   editForm.innerHTML = `
-    <div class="edit-form-content">
+    <div class="edit-form-content" onclick="event.stopPropagation()">
       <h4>Edit Temple Details</h4>
       <div class="form-group">
         <label>Temple Name:</label>
-        <input type="text" id="edit-temple-name" value="${temple.name}">
+        <input type="text" id="edit-temple-name" value="${temple.name}" onclick="event.stopPropagation()">
       </div>
       <div class="form-group">
         <label>Location:</label>
-        <input type="text" id="edit-temple-location" value="${temple.location}">
+        <input type="text" id="edit-temple-location" value="${temple.location}" onclick="event.stopPropagation()">
       </div>
-      <div class="form-actions">
-        <button class="save-btn" onclick="saveTemple('${templeId}')">Save</button>
-        <button class="cancel-btn" onclick="cancelEdit('${templeId}')">Cancel</button>
+      <div class="form-actions" onclick="event.stopPropagation()">
+        <button class="save-btn" onclick="saveTemple(event,'${templeId}')">Save</button>
+        <button class="cancel-btn" onclick="cancelEdit(event,'${templeId}')">Cancel</button>
       </div>
     </div>
   `;
@@ -576,9 +867,12 @@ function editTemple(templeId) {
 
   // Store original content for cancel
   templeCard.dataset.originalContent = originalContent;
+
 }
 
-function saveTemple(templeId) {
+async function saveTemple(e, templeId) {
+  e.stopPropagation(); // prevent bubbling
+
   const temple = TEMPLES[templeId];
   const newName = document.getElementById('edit-temple-name').value.trim();
   const newLocation = document.getElementById('edit-temple-location').value.trim();
@@ -591,24 +885,29 @@ function saveTemple(templeId) {
   // Update temple data
   temple.name = newName;
   temple.location = newLocation;
-
-  // Save to Firebase
-  db.collection('templeConfig').doc(templeId).set({
-    name: newName,
-    location: newLocation,
-    deviceId: temple.deviceId,
-    lastUpdated: new Date()
-  }).then(() => {
+  
+  try {
+    // Save to Supabase
+    await saveTempleToSupabase(templeId, {
+      name: newName,
+      location: newLocation,
+      deviceId: temple.deviceId
+    });
+    
     // Restore temple card with updated data
     restoreTempleCard(templeId);
     showMessage('Temple details updated successfully!', 'success');
-  }).catch(error => {
+    window.location.reload();
+    
+  } catch (error) {
     console.error('Error saving temple:', error);
     showMessage('Error saving temple details', 'error');
-  });
+  }
 }
 
-function cancelEdit(templeId) {
+function cancelEdit(e, templeId) {
+  e.stopPropagation(); // prevent bubbling
+
   restoreTempleCard(templeId);
 }
 
@@ -623,7 +922,9 @@ function restoreTempleCard(templeId) {
 }
 
 // NGO edit functions
-function editNGO(ngoId) {
+function editNGO(e, ngoId) {
+  e.stopPropagation(); // prevent bubbling
+  
   const ngo = NGOS[ngoId];
   if (!ngo) return;
 
@@ -634,25 +935,25 @@ function editNGO(ngoId) {
   const editForm = document.createElement('div');
   editForm.className = 'edit-form';
   editForm.innerHTML = `
-    <div class="edit-form-content">
+    <div class="edit-form-content" onclick="event.stopPropagation()">
       <h4>Edit NGO Details</h4>
       <div class="form-group">
         <label>NGO Name:</label>
-        <input type="text" id="edit-ngo-name" value="${ngo.name}">
+        <input type="text" id="edit-ngo-name" value="${ngo.name}" onclick="event.stopPropagation()">
       </div>
       <div class="form-group">
         <label>Description:</label>
-        <textarea id="edit-ngo-description">${ngo.description}</textarea>
+        <textarea id="edit-ngo-description" onclick="event.stopPropagation()">${ngo.description}</textarea>
       </div>
       <div class="form-group">
         <label>Phone:</label>
-        <input type="text" id="edit-ngo-phone" value="${ngo.phone}">
+        <input type="text" id="edit-ngo-phone" value="${ngo.phone}"  onclick="event.stopPropagation()">
       </div>
       <div class="form-group">
         <label>Email:</label>
-        <input type="email" id="edit-ngo-email" value="${ngo.email}">
+        <input type="email" id="edit-ngo-email" value="${ngo.email}"  onclick="event.stopPropagation()">
       </div>
-      <div class="form-actions">
+      <div class="form-actions" onclick="event.stopPropagation()">
         <button class="save-btn" onclick="saveNGO('${ngoId}')">Save</button>
         <button class="cancel-btn" onclick="cancelNGOEdit('${ngoId}')">Cancel</button>
       </div>
@@ -716,7 +1017,8 @@ function restoreNGOCard(ngoId) {
 }
 
 // Navigation functions
-function viewTempleDetails(templeId) {
+function viewTempleDetails(e, templeId) {
+  e.stopPropagation(); // prevent bubbling
   window.location.href = `temple-detail.html?temple=${templeId}`;
 }
 
@@ -786,12 +1088,17 @@ if (window.location.hostname === 'localhost' || window.location.hostname === '12
     simulateTempleData,
     TEMPLES,
     NGOS,
+    FOOTER_CONTACT,
     dailyStats,
     incrementFullCount,
     handleFullBinNotification,
     testSupabaseConnection,
     loadNGOsFromSupabase,
-    saveNGOToSupabase
+    saveNGOToSupabase,
+    loadTemplesFromSupabase,
+    saveTempleToSupabase,
+    loadFooterContactFromSupabase,
+    saveFooterContactToSupabase
   };
   console.log("🔧 Debug functions available via window.templeDebug");
 }

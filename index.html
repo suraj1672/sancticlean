@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8" />
   <title>SanctiClean - Smart Temple Management</title>
@@ -13,6 +14,7 @@
   <!-- Font Awesome for icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
+
 <body>
   <div class="wrap">
     <header>
@@ -33,7 +35,7 @@
             <span><i class="fas fa-envelope"></i> <span id="ngo-email-greenpuri">info@greenpuri.org</span></span>
           </div>
           <div class="ngo-actions">
-            <button class="edit-btn" onclick="editNGO('greenpuri')">
+            <button class="edit-btn" onclick="editNGO(event, 'greenpuri')">
               <i class="fas fa-edit"></i> Edit
             </button>
           </div>
@@ -44,10 +46,11 @@
           <p id="ngo-desc-swachhodisha">Clean India mission implementation</p>
           <div class="ngo-contact">
             <span><i class="fas fa-phone"></i> <span id="ngo-phone-swachhodisha">+91 9876543211</span></span>
-            <span><i class="fas fa-envelope"></i> <span id="ngo-email-swachhodisha">contact@swachhodisha.org</span></span>
+            <span><i class="fas fa-envelope"></i> <span
+                id="ngo-email-swachhodisha">contact@swachhodisha.org</span></span>
           </div>
           <div class="ngo-actions">
-            <button class="edit-btn" onclick="editNGO('swachhodisha')">
+            <button class="edit-btn" onclick="editNGO(event, 'swachhodisha')">
               <i class="fas fa-edit"></i> Edit
             </button>
           </div>
@@ -61,7 +64,7 @@
             <span><i class="fas fa-envelope"></i> <span id="ngo-email-templecare">help@templecare.org</span></span>
           </div>
           <div class="ngo-actions">
-            <button class="edit-btn" onclick="editNGO('templecare')">
+            <button class="edit-btn" onclick="editNGO(event, 'templecare')">
               <i class="fas fa-edit"></i> Edit
             </button>
           </div>
@@ -75,7 +78,7 @@
             <span><i class="fas fa-envelope"></i> <span id="ngo-email-cleannetwork">info@cleannetwork.org</span></span>
           </div>
           <div class="ngo-actions">
-            <button class="edit-btn" onclick="editNGO('cleannetwork')">
+            <button class="edit-btn" onclick="editNGO(event, 'cleannetwork')">
               <i class="fas fa-edit"></i> Edit
             </button>
           </div>
@@ -87,7 +90,7 @@
     <section class="temple-section">
       <h2><i class="fas fa-place-of-worship"></i> Temple Bin Monitoring</h2>
       <div class="temple-grid">
-        
+
         <!-- Jagannath Temple -->
         <div class="temple-card" data-temple="jagannath">
           <div class="temple-header">
@@ -101,7 +104,7 @@
               <div class="notification-count" id="notifications-jagannath">0 alerts</div>
             </div>
           </div>
-          
+
           <div class="temple-content">
             <div class="ring-container">
               <div class="ring">
@@ -112,7 +115,7 @@
                 <div class="percent" id="fill-jagannath">0%</div>
               </div>
             </div>
-            
+
             <div class="temple-stats">
               <div class="stat-item">
                 <div class="stat-label">Fill Level</div>
@@ -124,10 +127,10 @@
               </div>
             </div>
             <div class="temple-actions">
-              <button class="edit-btn" onclick="editTemple('jagannath')">
+              <button class="edit-btn" onclick="editTemple(event,'jagannath')">
                 <i class="fas fa-edit"></i> Edit Details
               </button>
-              <button class="view-btn" onclick="viewTempleDetails('jagannath')">
+              <button class="view-btn" onclick="viewTempleDetails(event, 'jagannath')">
                 <i class="fas fa-eye"></i> View Details
               </button>
             </div>
@@ -147,7 +150,7 @@
               <div class="notification-count" id="notifications-gundicha">0 alerts</div>
             </div>
           </div>
-          
+
           <div class="temple-content">
             <div class="ring-container">
               <div class="ring">
@@ -158,7 +161,7 @@
                 <div class="percent" id="fill-gundicha">0%</div>
               </div>
             </div>
-            
+
             <div class="temple-stats">
               <div class="stat-item">
                 <div class="stat-label">Fill Level</div>
@@ -170,10 +173,10 @@
               </div>
             </div>
             <div class="temple-actions">
-              <button class="edit-btn" onclick="editTemple('gundicha')">
+              <button class="edit-btn" onclick="editTemple(event,'gundicha')">
                 <i class="fas fa-edit"></i> Edit Details
               </button>
-              <button class="view-btn" onclick="viewTempleDetails('gundicha')">
+              <button class="view-btn" onclick="viewTempleDetails(event, 'gundicha')">
                 <i class="fas fa-eye"></i> View Details
               </button>
             </div>
@@ -193,7 +196,7 @@
               <div class="notification-count" id="notifications-lokanath">0 alerts</div>
             </div>
           </div>
-          
+
           <div class="temple-content">
             <div class="ring-container">
               <div class="ring">
@@ -204,7 +207,7 @@
                 <div class="percent" id="fill-lokanath">0%</div>
               </div>
             </div>
-            
+
             <div class="temple-stats">
               <div class="stat-item">
                 <div class="stat-label">Fill Level</div>
@@ -216,10 +219,10 @@
               </div>
             </div>
             <div class="temple-actions">
-              <button class="edit-btn" onclick="editTemple('lokanath')">
+              <button class="edit-btn" onclick="editTemple(event,'lokanath')">
                 <i class="fas fa-edit"></i> Edit Details
               </button>
-              <button class="view-btn" onclick="viewTempleDetails('lokanath')">
+              <button class="view-btn" onclick="viewTempleDetails(event, 'lokanath')">
                 <i class="fas fa-eye"></i> View Details
               </button>
             </div>
@@ -239,7 +242,7 @@
               <div class="notification-count" id="notifications-mausimaa">0 alerts</div>
             </div>
           </div>
-          
+
           <div class="temple-content">
             <div class="ring-container">
               <div class="ring">
@@ -250,7 +253,7 @@
                 <div class="percent" id="fill-mausimaa">0%</div>
               </div>
             </div>
-            
+
             <div class="temple-stats">
               <div class="stat-item">
                 <div class="stat-label">Fill Level</div>
@@ -262,10 +265,10 @@
               </div>
             </div>
             <div class="temple-actions">
-              <button class="edit-btn" onclick="editTemple('mausimaa')">
+              <button class="edit-btn" onclick="editTemple(event, 'mausimaa')">
                 <i class="fas fa-edit"></i> Edit Details
               </button>
-              <button class="view-btn" onclick="viewTempleDetails('mausimaa')">
+              <button class="view-btn" onclick="viewTempleDetails(event, 'mausimaa')">
                 <i class="fas fa-eye"></i> View Details
               </button>
             </div>
@@ -280,9 +283,10 @@
       <div class="future-content">
         <div class="future-intro">
           <h3>Future Scope: Next Generation Smart Waste Management</h3>
-          <p>The project can be further enhanced by integrating advanced technologies and scaling to broader applications for comprehensive waste management solutions.</p>
+          <p>The project can be further enhanced by integrating advanced technologies and scaling to broader
+            applications for comprehensive waste management solutions.</p>
         </div>
-        
+
         <div class="future-features">
           <div class="future-feature">
             <div class="feature-image">
@@ -290,41 +294,51 @@
             </div>
             <div class="feature-content">
               <h4>Camera-Based ML Waste Classification</h4>
-              <p>Integration of camera-based machine learning models capable of automatically identifying and classifying waste into categories such as recyclable, renewable, non-recyclable, and hazardous. This system will improve accuracy and efficiency of waste segregation while reducing human intervention and errors.</p>
+              <p>Integration of camera-based machine learning models capable of automatically identifying and
+                classifying waste into categories such as recyclable, renewable, non-recyclable, and hazardous. This
+                system will improve accuracy and efficiency of waste segregation while reducing human intervention and
+                errors.</p>
             </div>
           </div>
-          
+
           <div class="future-feature">
             <div class="feature-image">
               <i class="fas fa-lightbulb"></i>
             </div>
             <div class="feature-content">
               <h4>Intelligent Waste Management Recommendations</h4>
-              <p>By analyzing the type and quantity of waste generated, the system will provide customized recommendations for better waste management practices. This includes suggesting composting for organic waste, highlighting recyclable materials for proper disposal, and proposing reduction strategies for non-recyclable items.</p>
+              <p>By analyzing the type and quantity of waste generated, the system will provide customized
+                recommendations for better waste management practices. This includes suggesting composting for organic
+                waste, highlighting recyclable materials for proper disposal, and proposing reduction strategies for
+                non-recyclable items.</p>
             </div>
           </div>
-          
+
           <div class="future-feature">
             <div class="feature-image">
               <i class="fas fa-city"></i>
             </div>
             <div class="feature-content">
               <h4>Smart City & Industrial Scaling</h4>
-              <p>Long-term scalability to smart cities and industrial settings, where real-time monitoring of waste streams can optimize collection schedules, reduce environmental impact, and encourage sustainable practices among communities.</p>
+              <p>Long-term scalability to smart cities and industrial settings, where real-time monitoring of waste
+                streams can optimize collection schedules, reduce environmental impact, and encourage sustainable
+                practices among communities.</p>
             </div>
           </div>
-          
+
           <div class="future-feature">
             <div class="feature-image">
               <i class="fas fa-mobile-alt"></i>
             </div>
             <div class="feature-content">
               <h4>IoT & Mobile App Integration</h4>
-              <p>Integration with mobile apps and IoT-enabled bins to enable data-driven waste management strategies, fostering a cleaner and more sustainable environment through real-time monitoring and community engagement.</p>
+              <p>Integration with mobile apps and IoT-enabled bins to enable data-driven waste management strategies,
+                fostering a cleaner and more sustainable environment through real-time monitoring and community
+                engagement.</p>
             </div>
           </div>
         </div>
-        
+
         <div class="future-timeline">
           <h4>Implementation Timeline</h4>
           <div class="timeline">
@@ -358,8 +372,11 @@
         </div>
         <div class="footer-section">
           <h4>Contact Support</h4>
-          <p><i class="fas fa-envelope"></i> support@templedashboard.com</p>
-          <p><i class="fas fa-phone"></i> +91 674-XXXX-XXXX</p>
+          <p><i class="fas fa-envelope"></i> <span id="footer-email">support@templedashboard.com</span></p>
+          <p><i class="fas fa-phone"></i> <span id="footer-phone">+91 674-XXXX-XXXX</span></p>
+          <button class="edit-btn" onclick="editFooterContact(event)" style="margin-top: 10px; padding: 5px 10px; font-size: 12px;">
+            <i class="fas fa-edit"></i> Edit Contact
+          </button>
         </div>
         <div class="footer-section">
           <h4>Emergency</h4>
@@ -372,4 +389,5 @@
 
   <script src="temple-dashboard.js"></script>
 </body>
+
 </html>
